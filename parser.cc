@@ -7,6 +7,8 @@
 
 using namespace std;
 
+
+
 Parser::Parser(){
     lexer = new LexicalAnalyzer();
     index = 0;
@@ -88,7 +90,50 @@ void Parser::parseGlobalVars(){
 
 void Parser::parseVarList(){
     token = tokenList[index];
-    symbolTable->addVariable("global", token.lexeme, true);
+    symbolTable->addVariable(currentScope, token.lexeme, currentlyPublic);
+    cout << "DEBUG: added variable with scope " << currentScope << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
+    index++;  //we've now made sense of this token
+
+    //what next? well, check if there's a comma
+    token = tokenList[index];
+    if(token.token_type == COMMA){
+        parseVarList();
+    }
+    return;
+}
+
+void Parser::parseScope(){
+    token = tokenList[index];
+    currentScope = token.lexeme;
+    //we've got our scope locked in, make sure our syntax is correct
+    expect(LBRACE);
+    //ok good now we have public and private variables to check for
+    index++;
+    token = tokenList[index];
+    if(token.token_type == PUBLIC){
+        parsePublicVars();
+    }
+    if(token.token_type == PRIVATE){
+        parsePrivateVars();
+    }
+
+    index++;
+    token = tokenList[index];
+    //if we're past both public and private, then this is a statement list
+    //so if we don't have an equals sign we've got a syntax error
+    if(Peek(1).token_type == EQUAL){
+        parseStmtList();
+    }
+    else{
+        SyntaxError();
+    }
+    //past the statement list, now do we have an rbrace?
+    expect(RBRACE);
+    //TODO: delete everything in the symbol list that has this scope in it, then clear the scope
+}
+
+void Parser::parsePublicVars(){
+    
 }
 
 

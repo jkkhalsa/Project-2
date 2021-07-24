@@ -1,3 +1,5 @@
+#ifndef PARSER_H
+#define PARSER_H
 #include "lexer.h"
 #include "variable.h"
 
@@ -7,7 +9,6 @@ class Parser{
     LexicalAnalyzer* lexer;
     std::vector<Token> tokenList;
     VariableList* symbolTable;
-    std::string currentScope;
     Token token;
 
     Parser();
@@ -25,6 +26,10 @@ class Parser{
 
     private:
     int index; //how far along in the token list we are
+    bool currentlyPublic;
+    std::string currentScope;
 
     void SyntaxError();
 };
+
+#endif

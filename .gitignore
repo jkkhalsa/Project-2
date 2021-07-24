@@ -6,3 +6,5 @@ inputbuf.o
 lexer.o
 tester.txt
 .vscode/settings.json
+parser.o
+variable.o

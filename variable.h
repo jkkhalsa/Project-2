@@ -1,3 +1,6 @@
+#ifndef VARIABLE_H
+#define VARIABLE_H
+
 #include <vector>
 #include <iostream>
 
@@ -8,8 +11,6 @@ class Variable{
     std::string name;
     //std::string content;
     bool isPublic;
-
-    Variable();
 };
 
 class VariableList{
@@ -22,3 +23,5 @@ class VariableList{
 
 
 };
+
+#endif
