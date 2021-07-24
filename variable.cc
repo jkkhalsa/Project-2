@@ -35,3 +35,8 @@ void VariableList::eraseScope(string deletingScope){
     }
     return;
 }
+
+//TODO: Search through our symbol table to see where the one that just got called is at
+Variable VariableList::searchList(string currentScope, string variableName){
+
+}

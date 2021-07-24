@@ -146,7 +146,6 @@ void Parser::parseScope(){
     }
     //past the statement list, now do we have an rbrace?
     expect(RBRACE);
-    //TODO: delete everything in the symbol list that has this scope in it, then clear the scope
     //we've hit an rbrace - that means we need to delete all the variables belonging to this scope
     symbolTable->eraseScope(currentScope);
     return;
