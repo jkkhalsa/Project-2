@@ -21,3 +21,17 @@ void VariableList::addVariable(string s, string n, bool p){
     list.push_back(variable);
     return;
 }
+
+//goes through the variable list and erases the ones belonging to the scope we just exited
+void VariableList::eraseScope(string deletingScope){
+    auto iterator = list.begin();
+    while(iterator != list.end()){
+        if(iterator->scope == deletingScope){
+            iterator = list.erase(iterator);
+        }
+        else{
+            ++iterator;
+        }
+    }
+    return;
+}

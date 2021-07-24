@@ -14,6 +14,7 @@ class Parser{
     Parser();
     Token Peek(int);
 
+    Token expect(TokenType);
     void parseProgram();
     void parseGlobalVars();
     void parseVarList();
@@ -22,7 +23,6 @@ class Parser{
     void parsePrivateVars();
     void parseStmtList();
     void parseStmt();
-    Token expect(TokenType);
 
     private:
     int index; //how far along in the token list we are

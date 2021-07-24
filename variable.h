@@ -20,6 +20,7 @@ class VariableList{
 
     VariableList();
     void addVariable(std::string, std::string, bool); 
+    void eraseScope(std:: string);
 
 
 };

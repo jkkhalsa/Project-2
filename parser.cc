@@ -38,6 +38,7 @@ Token Parser::Peek(int howFar)
 void Parser::SyntaxError()
 {
     cout << "SYNTAX ERROR\n";
+    cout << "error on token type " << token.token_type << "\n";
     exit(1);
 }
 
@@ -60,6 +61,7 @@ Token Parser::expect(TokenType expected_type)
 }
 
 void Parser::parseProgram(){
+    cout << "DEBUG: began parsing the program\n";
     //will either start with global variables or a scope
     //is global variables if we have an ID and a comma
     //place 0 will always be an ID - both gv and scope start that way
@@ -68,10 +70,12 @@ void Parser::parseProgram(){
     if(token.token_type == COMMA){
         //this is global variables
         //need to parse a var_list
+        index++; //now made sense of the comma
         parseVarList();
     }
     if(token.token_type == LBRACE){
         //this is scope
+        index++; //now made sense of the lbrace
         //need to parse the scope
         parseScope();
     }
@@ -81,6 +85,7 @@ void Parser::parseProgram(){
 }
 
 void Parser::parseGlobalVars(){
+    cout << "DEBUG: parsing global variables\n";
     currentScope = ":";
     parseVarList();
     //if this doesn't end with a semicolon, we've a fuckin problem m8
@@ -89,20 +94,31 @@ void Parser::parseGlobalVars(){
 }
 
 void Parser::parseVarList(){
+    cout << "DEBUG: parsing a variable list\n";
     token = tokenList[index];
-    symbolTable->addVariable(currentScope, token.lexeme, currentlyPublic);
-    cout << "DEBUG: added variable with scope " << currentScope << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
-    index++;  //we've now made sense of this token
-
-    //what next? well, check if there's a comma
+    //a var list MUST start with an ID
+    if(token.token_type == ID){
+        //if we've got an ID, add it as a variable with all the niceties
+        symbolTable->addVariable(currentScope, token.lexeme, currentlyPublic);
+        cout << "DEBUG: added variable with scope " << currentScope << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
+        index++;  //we've now made sense of this token
+    }
+    else{
+        //we did a whoopsie fuck off now <3
+        SyntaxError();
+    }
+    
+    //what next? well, check if there's a comma, which means the var list keeps going
     token = tokenList[index];
     if(token.token_type == COMMA){
+        index++; //we've now made sense of this token
         parseVarList();
     }
     return;
 }
 
 void Parser::parseScope(){
+    cout << "DEBUG: parsing scope\n";
     token = tokenList[index];
     currentScope = token.lexeme;
     //we've got our scope locked in, make sure our syntax is correct
@@ -111,13 +127,14 @@ void Parser::parseScope(){
     index++;
     token = tokenList[index];
     if(token.token_type == PUBLIC){
+        index++; //we've now made sense of this token
         parsePublicVars();
     }
     if(token.token_type == PRIVATE){
+        index++; //we've now made sense of this token
         parsePrivateVars();
     }
 
-    index++;
     token = tokenList[index];
     //if we're past both public and private, then this is a statement list
     //so if we don't have an equals sign we've got a syntax error
@@ -130,12 +147,61 @@ void Parser::parseScope(){
     //past the statement list, now do we have an rbrace?
     expect(RBRACE);
     //TODO: delete everything in the symbol list that has this scope in it, then clear the scope
+    //we've hit an rbrace - that means we need to delete all the variables belonging to this scope
+    symbolTable->eraseScope(currentScope);
+    return;
 }
 
 void Parser::parsePublicVars(){
-    
+    cout << "DEBUG: parsing public variables\n";
+    currentlyPublic = true;
+    expect(COLON);
+    parseVarList();
+    expect(SEMICOLON);
+    return;
 }
 
+void Parser::parsePrivateVars(){
+    cout << "DEBUG: parsing private variables\n";
+    currentlyPublic = false;
+    expect(COLON);
+    parseVarList();
+    expect(SEMICOLON);
+    return;
+}
+
+void Parser::parseStmtList(){
+    //so if this doesn't start with an ID we've got a problem
+    token = tokenList[index];
+    if(token.token_type != ID){
+        SyntaxError();
+    }
+    //cool we're here now so this is either going to stmt or scope, check one ahead
+    if(Peek(1).token_type == EQUAL){
+        parseStmt();
+    }
+    if(Peek(1).token_type == LBRACE){
+        parseScope();
+    }
+
+    //there's either another statement list starting here or else we need to return
+    //once again, only way to know is check one ahead
+    if(Peek(1).token_type == EQUAL || Peek(1).token_type == LBRACE){
+        parseStmtList();
+    }
+    return;
+
+
+}
+
+void Parser::parseStmt(){
+    //here's where we're going to output what's needed for the program
+    if(Peek(3).token_type != SEMICOLON){
+        SyntaxError();
+    }
+    //TODO: search through the list for each variable name and print out their scopes as directed
+
+}
 
 
 

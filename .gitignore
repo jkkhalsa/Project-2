@@ -8,3 +8,4 @@ tester.txt
 .vscode/settings.json
 parser.o
 variable.o
+parser.o
