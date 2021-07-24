@@ -20,8 +20,8 @@ string reserved[] = { "END_OF_FILE",
     "LBRACE", "RBRACE", "ID", "ERROR"
 };
 
-#define KEYWORDS_COUNT 5
-string keyword[] = { "IF", "WHILE", "DO", "THEN", "PRINT" };
+#define KEYWORDS_COUNT 2
+string keyword[] = { "PUBLIC", "PRIVATE" };
 
 void Token::Print()
 {
@@ -56,6 +56,31 @@ bool LexicalAnalyzer::SkipSpace()
         input.UngetChar(c);
     }
     return space_encountered;
+}
+
+//ADDED FUNCTION 7/24
+bool LexicalAnalyzer::SkipComments(){
+    char c;
+    bool commentEncountered = false;
+
+    input.GetChar(c);
+    line_no += (c == '\n');
+
+    if(c == '/'){
+        //cout << "skipping comment\n";
+        while(!input.EndOfInput() && c != '\n'){
+            commentEncountered = true;
+            input.GetChar(c);
+            line_no += (c == '\n');
+        }
+    }
+    else{
+        //cout << "DEBUG: no comment encountered\n";
+        input.UngetChar(c);
+        //input.UngetChar('\\');
+        //return ScanIdOrKeyword();
+    }
+    return commentEncountered;
 }
 
 bool LexicalAnalyzer::IsKeyword(string s)
@@ -176,6 +201,7 @@ Token LexicalAnalyzer::GetToken()
     }
 
     SkipSpace();
+    SkipComments();
     tmp.lexeme = "";
     tmp.line_no = line_no;
     input.GetChar(c);
@@ -213,6 +239,7 @@ Token LexicalAnalyzer::GetToken()
         case ']':
             tmp.token_type = RBRACE;
             return tmp;
+
         /*case '(':
             tmp.token_type = LPAREN;
             return tmp;
@@ -244,16 +271,18 @@ Token LexicalAnalyzer::GetToken()
             }
             return tmp;*/
         default:
-            if (isdigit(c)) {
+            /*if (isdigit(c)) {
                 input.UngetChar(c);
                 return ScanNumber();
-            } else if (isalpha(c)) {
+            }*/
+            if (isalpha(c)) {
                 input.UngetChar(c);
                 return ScanIdOrKeyword();
             } else if (input.EndOfInput())
                 tmp.token_type = END_OF_FILE;
             else
                 tmp.token_type = ERROR;
+                cout << "DEBUG: error char is " << c << "\n";
 
             return tmp;
     }
