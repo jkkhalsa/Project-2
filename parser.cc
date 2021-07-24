@@ -3,12 +3,14 @@
 
 #include "lexer.h"
 #include "parser.h"
+#include "variable.h"
 
 using namespace std;
 
 Parser::Parser(){
     lexer = new LexicalAnalyzer();
     index = 0;
+    symbolTable = new VariableList();
 }
 
 
@@ -55,7 +57,39 @@ Token Parser::expect(TokenType expected_type)
     return t;*/
 }
 
+void Parser::parseProgram(){
+    //will either start with global variables or a scope
+    //is global variables if we have an ID and a comma
+    //place 0 will always be an ID - both gv and scope start that way
+    //scope place 1 will have a lbrace, gv place 1 will have a comma
+    token = Peek(1);
+    if(token.token_type == COMMA){
+        //this is global variables
+        //need to parse a var_list
+        parseVarList();
+    }
+    if(token.token_type == LBRACE){
+        //this is scope
+        //need to parse the scope
+        parseScope();
+    }
+    else{
+        SyntaxError();
+    }
+}
 
+void Parser::parseGlobalVars(){
+    currentScope = ":";
+    parseVarList();
+    //if this doesn't end with a semicolon, we've a fuckin problem m8
+    expect(SEMICOLON);
+    return;
+}
+
+void Parser::parseVarList(){
+    token = tokenList[index];
+    symbolTable->addVariable("global", token.lexeme, true);
+}
 
 
 
@@ -80,5 +114,6 @@ int main()
 
 
     //parse that list into actual output
+    parser.parseProgram();
 
 }

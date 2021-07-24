@@ -1,20 +1,18 @@
 #include "lexer.h"
+#include "variable.h"
 
 
 class Parser{
     public:
     LexicalAnalyzer* lexer;
     std::vector<Token> tokenList;
+    VariableList* symbolTable;
+    std::string currentScope;
+    Token token;
 
     Parser();
     Token Peek(int);
 
-
-    private:
-    int index; //how far along in the token list we are
-
-    void SyntaxError();
-    Token expect(TokenType);
     void parseProgram();
     void parseGlobalVars();
     void parseVarList();
@@ -23,4 +21,10 @@ class Parser{
     void parsePrivateVars();
     void parseStmtList();
     void parseStmt();
+    Token expect(TokenType);
+
+    private:
+    int index; //how far along in the token list we are
+
+    void SyntaxError();
 };
