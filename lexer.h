@@ -34,7 +34,6 @@ class LexicalAnalyzer {
     TokenType UngetToken(Token);
     LexicalAnalyzer();
     Token Peek(int);
-    std::vector<Token> tokenList;
 
   private:
     std::vector<Token> tokens;

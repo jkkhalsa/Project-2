@@ -5,3 +5,4 @@ a.out
 inputbuf.o
 lexer.o
 tester.txt
+.vscode/settings.json

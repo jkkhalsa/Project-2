@@ -55,6 +55,7 @@ bool LexicalAnalyzer::SkipSpace()
     if (!input.EndOfInput()) {
         input.UngetChar(c);
     }
+    SkipComments();
     return space_encountered;
 }
 
@@ -80,6 +81,7 @@ bool LexicalAnalyzer::SkipComments(){
         //input.UngetChar('\\');
         //return ScanIdOrKeyword();
     }
+    SkipSpace();
     return commentEncountered;
 }
 
@@ -163,25 +165,6 @@ Token LexicalAnalyzer::ScanIdOrKeyword()
         tmp.token_type = ERROR;
     }
     return tmp;
-}
-
-// peek requires that the argument "howFar" be positive.
-Token LexicalAnalyzer::Peek(int howFar)
-{
-    if (howFar <= 0) {      // peeking backward or in place is not allowed
-        cout << "LexicalAnalyzer:peek:Error: non positive argument\n";
-        exit(-1);
-    } 
-
-    int peekIndex = index + howFar - 1;
-    if (peekIndex > (tokenList.size()-1)) { // if peeking too far
-        Token token;                        // return END_OF_FILE
-        token.lexeme = "";
-        token.line_no = line_no;
-        token.token_type = END_OF_FILE;
-        return token;
-    } else
-        return tokenList[peekIndex];
 }
 
 // you should unget tokens in the reverse order in which they
