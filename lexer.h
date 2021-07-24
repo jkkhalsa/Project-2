@@ -33,9 +33,12 @@ class LexicalAnalyzer {
     Token GetToken();
     TokenType UngetToken(Token);
     LexicalAnalyzer();
+    Token Peek(int);
+    std::vector<Token> tokenList;
 
   private:
     std::vector<Token> tokens;
+    int index;
     int line_no;
     Token tmp;
     InputBuffer input;

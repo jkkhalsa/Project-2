@@ -4,3 +4,4 @@ tests/
 a.out
 inputbuf.o
 lexer.o
+tester.txt

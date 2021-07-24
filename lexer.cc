@@ -21,7 +21,7 @@ string reserved[] = { "END_OF_FILE",
 };
 
 #define KEYWORDS_COUNT 2
-string keyword[] = { "PUBLIC", "PRIVATE" };
+string keyword[] = { "public", "private" };
 
 void Token::Print()
 {
@@ -165,6 +165,25 @@ Token LexicalAnalyzer::ScanIdOrKeyword()
     return tmp;
 }
 
+// peek requires that the argument "howFar" be positive.
+Token LexicalAnalyzer::Peek(int howFar)
+{
+    if (howFar <= 0) {      // peeking backward or in place is not allowed
+        cout << "LexicalAnalyzer:peek:Error: non positive argument\n";
+        exit(-1);
+    } 
+
+    int peekIndex = index + howFar - 1;
+    if (peekIndex > (tokenList.size()-1)) { // if peeking too far
+        Token token;                        // return END_OF_FILE
+        token.lexeme = "";
+        token.line_no = line_no;
+        token.token_type = END_OF_FILE;
+        return token;
+    } else
+        return tokenList[peekIndex];
+}
+
 // you should unget tokens in the reverse order in which they
 // are obtained. If you execute
 //
@@ -202,6 +221,7 @@ Token LexicalAnalyzer::GetToken()
 
     SkipSpace();
     SkipComments();
+    SkipSpace();
     tmp.lexeme = "";
     tmp.line_no = line_no;
     input.GetChar(c);
@@ -233,10 +253,10 @@ Token LexicalAnalyzer::GetToken()
         case ';':
             tmp.token_type = SEMICOLON;
             return tmp;
-        case '[':
+        case '{':
             tmp.token_type = LBRACE;
             return tmp;
-        case ']':
+        case '}':
             tmp.token_type = RBRACE;
             return tmp;
 
@@ -282,22 +302,8 @@ Token LexicalAnalyzer::GetToken()
                 tmp.token_type = END_OF_FILE;
             else
                 tmp.token_type = ERROR;
-                cout << "DEBUG: error char is " << c << "\n";
 
             return tmp;
     }
 }
 
-int main()
-{
-    LexicalAnalyzer lexer;
-    Token token;
-
-    token = lexer.GetToken();
-    token.Print();
-    while (token.token_type != END_OF_FILE)
-    {
-        token = lexer.GetToken();
-        token.Print();
-    }
-}
