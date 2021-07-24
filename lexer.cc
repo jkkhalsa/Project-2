@@ -15,12 +15,9 @@
 using namespace std;
 
 string reserved[] = { "END_OF_FILE",
-    "IF", "WHILE", "DO", "THEN", "PRINT",
-    "PLUS", "MINUS", "DIV", "MULT",
+    "PUBLIC", "PRIVATE", 
     "EQUAL", "COLON", "COMMA", "SEMICOLON",
-    "LBRAC", "RBRAC", "LPAREN", "RPAREN",
-    "NOTEQUAL", "GREATER", "LESS", "LTEQ", "GTEQ",
-    "DOT", "NUM", "ID", "ERROR" // TODO: Add labels for new token types here (as string)
+    "LBRACE", "RBRACE", "ID", "ERROR"
 };
 
 #define KEYWORDS_COUNT 5
@@ -81,7 +78,7 @@ TokenType LexicalAnalyzer::FindKeywordIndex(string s)
     return ERROR;
 }
 
-Token LexicalAnalyzer::ScanNumber()
+/*Token LexicalAnalyzer::ScanNumber()
 {
     char c;
 
@@ -112,7 +109,7 @@ Token LexicalAnalyzer::ScanNumber()
         tmp.line_no = line_no;
         return tmp;
     }
-}
+}*/
 
 Token LexicalAnalyzer::ScanIdOrKeyword()
 {
@@ -183,7 +180,7 @@ Token LexicalAnalyzer::GetToken()
     tmp.line_no = line_no;
     input.GetChar(c);
     switch (c) {
-        case '.':
+        /*case '.':
             tmp.token_type = DOT;
             return tmp;
         case '+':
@@ -197,7 +194,7 @@ Token LexicalAnalyzer::GetToken()
             return tmp;
         case '*':
             tmp.token_type = MULT;
-            return tmp;
+            return tmp;*/
         case '=':
             tmp.token_type = EQUAL;
             return tmp;
@@ -211,12 +208,12 @@ Token LexicalAnalyzer::GetToken()
             tmp.token_type = SEMICOLON;
             return tmp;
         case '[':
-            tmp.token_type = LBRAC;
+            tmp.token_type = LBRACE;
             return tmp;
         case ']':
-            tmp.token_type = RBRAC;
+            tmp.token_type = RBRACE;
             return tmp;
-        case '(':
+        /*case '(':
             tmp.token_type = LPAREN;
             return tmp;
         case ')':
@@ -245,7 +242,7 @@ Token LexicalAnalyzer::GetToken()
                 }
                 tmp.token_type = GREATER;
             }
-            return tmp;
+            return tmp;*/
         default:
             if (isdigit(c)) {
                 input.UngetChar(c);
