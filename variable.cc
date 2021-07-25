@@ -3,6 +3,9 @@
 
 using namespace std;
 
+string Variable::printVariable(){
+    return scope + '.' + name;
+}
 
 
 VariableList::VariableList(){
@@ -38,5 +41,21 @@ void VariableList::eraseScope(string deletingScope){
 
 //TODO: Search through our symbol table to see where the one that just got called is at
 Variable VariableList::searchList(string currentScope, string variableName){
+    auto iterator = list.end();
+    while(iterator != list.begin()){
+        if(iterator->name == variableName){
+            if(iterator->scope == currentScope || iterator->isPublic == true || iterator->scope == ":"){
+                //if we find the variable matching the scope and the name
+                return *iterator;//TODO: does this work pointer-wise????
+            }
+        }
+    }
+    //if we're down here then there's no variable in the entire list that matches
+    //so just make one ez
+    Variable variable;
+    variable.scope = "?";
+    variable.name = variableName;
+
+
 
 }

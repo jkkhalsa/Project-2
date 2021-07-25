@@ -11,6 +11,8 @@ class Variable{
     std::string name;
     //std::string content;
     bool isPublic;
+
+    std::string printVariable();
 };
 
 class VariableList{
