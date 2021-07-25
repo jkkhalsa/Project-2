@@ -24,9 +24,12 @@ class Parser{
     void parseStmtList();
     void parseStmt();
 
+    void printTokenList();
+
     private:
     int index; //how far along in the token list we are
     bool currentlyPublic;
+    std::vector<std::string> scopeList;
     std::string currentScope;
 
     void SyntaxError();

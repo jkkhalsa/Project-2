@@ -55,7 +55,5 @@ Variable VariableList::searchList(string currentScope, string variableName){
     Variable variable;
     variable.scope = "?";
     variable.name = variableName;
-
-
-
+    return variable;
 }

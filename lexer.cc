@@ -51,11 +51,13 @@ bool LexicalAnalyzer::SkipSpace()
         input.GetChar(c);
         line_no += (c == '\n');
     }
+    if(c == '/'){
+        SkipComments();
+    }
 
     if (!input.EndOfInput()) {
         input.UngetChar(c);
     }
-    SkipComments();
     return space_encountered;
 }
 
@@ -75,13 +77,15 @@ bool LexicalAnalyzer::SkipComments(){
             line_no += (c == '\n');
         }
     }
+    if(c == ' '){
+        SkipSpace();
+    }
     else{
         //cout << "DEBUG: no comment encountered\n";
         input.UngetChar(c);
         //input.UngetChar('\\');
         //return ScanIdOrKeyword();
     }
-    SkipSpace();
     return commentEncountered;
 }
 
@@ -204,7 +208,6 @@ Token LexicalAnalyzer::GetToken()
 
     SkipSpace();
     SkipComments();
-    SkipSpace();
     tmp.lexeme = "";
     tmp.line_no = line_no;
     input.GetChar(c);

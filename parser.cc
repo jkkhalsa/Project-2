@@ -31,15 +31,28 @@ Token Parser::Peek(int howFar)
         token.line_no = -1;
         token.token_type = END_OF_FILE;
         return token;
-    } else
+    } else{
+        cout << "DEBUG: token type peeked at is " << tokenList[peekIndex].token_type << "\n";
         return tokenList[peekIndex];
+        
+    }
+
+        
 }
 
 void Parser::SyntaxError()
 {
     cout << "SYNTAX ERROR\n";
     cout << "error on token type " << token.token_type << "\n";
+    cout << "token is " << token.lexeme << " at line " << token.line_no << "\n";
     exit(1);
+}
+
+void Parser::printTokenList(){
+    for(auto elem : tokenList){
+        elem.Print();
+    }
+    return;
 }
 
 //increments the index of tokenList in the function itself
@@ -86,7 +99,8 @@ void Parser::parseProgram(){
 
 void Parser::parseGlobalVars(){
     cout << "DEBUG: parsing global variables\n";
-    currentScope = ":";
+    scopeList.push_back(":");
+    //currentScope = ":";
     parseVarList();
     //if this doesn't end with a semicolon, we've a fuckin problem m8
     expect(SEMICOLON);
@@ -99,8 +113,8 @@ void Parser::parseVarList(){
     //a var list MUST start with an ID
     if(token.token_type == ID){
         //if we've got an ID, add it as a variable with all the niceties
-        symbolTable->addVariable(currentScope, token.lexeme, currentlyPublic);
-        cout << "DEBUG: added variable with scope " << currentScope << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
+        symbolTable->addVariable(scopeList.back(), token.lexeme, currentlyPublic);
+        cout << "DEBUG: added variable with scope " << scopeList.back() << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
         index++;  //we've now made sense of this token
     }
     else{
@@ -120,7 +134,8 @@ void Parser::parseVarList(){
 void Parser::parseScope(){
     cout << "DEBUG: parsing scope\n";
     token = tokenList[index];
-    currentScope = token.lexeme;
+    scopeList.push_back(token.lexeme);
+    //currentScope = token.lexeme;
     //we've got our scope locked in, make sure our syntax is correct
     expect(LBRACE);
     //ok good now we have public and private variables to check for
@@ -147,7 +162,9 @@ void Parser::parseScope(){
     //past the statement list, now do we have an rbrace?
     expect(RBRACE);
     //we've hit an rbrace - that means we need to delete all the variables belonging to this scope
-    symbolTable->eraseScope(currentScope);
+    symbolTable->eraseScope(scopeList.back());
+    //and now delete this from our list of nested scopes
+    scopeList.pop_back();
     return;
 }
 
@@ -195,10 +212,11 @@ void Parser::parseStmtList(){
 
 void Parser::parseStmt(){
     //here's where we're going to output what's needed for the program
-    if(Peek(3).token_type != SEMICOLON){
+    if(Peek(3).token_type != SEMICOLON){  //TODO: make sure this is peeking the right number of spaces
         SyntaxError();
     }
     //TODO: search through the list for each variable name and print out their scopes as directed
+
 
 }
 
@@ -211,17 +229,21 @@ int main()
     Token token;
 
     token = lexer.GetToken();
-    parser.tokenList.push_back(token);
+    if(token.token_type != ERROR){  //is this cheating? we'll find out
+         parser.tokenList.push_back(token); //add what we just determined to the end of the token list
+    }
     //token.Print();
 
     //find the list of tokens
     while (token.token_type != END_OF_FILE)
     {
         token = lexer.GetToken();
-        parser.tokenList.push_back(token); //add what we just determined to the end of the token list
-        token.Print();
+        if(token.token_type != ERROR){  //is this cheating? we'll find out
+             parser.tokenList.push_back(token); //add what we just determined to the end of the token list
+        }
+        //token.Print();
     }
-
+    parser.printTokenList();
 
     //parse that list into actual output
     parser.parseProgram();
