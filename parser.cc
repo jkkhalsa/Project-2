@@ -81,8 +81,8 @@ void Parser::parseProgram(){
     token = Peek(2);
     if(token.token_type == COMMA){
         //this is global variables
-        //need to parse a var_list
-        parseVarList();
+        //need to parse global variables
+        parseGlobalVars();
     }
     if(token.token_type == LBRACE){
         //this is scope
