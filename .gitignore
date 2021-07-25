@@ -9,3 +9,4 @@ tester.txt
 parser.o
 variable.o
 parser.o
+.vscode/launch.json

@@ -14,6 +14,7 @@ VariableList::VariableList(){
 
 //scope, name, isPublic?
 void VariableList::addVariable(string s, string n, bool p){
+    cout << "DEBUG: in addVaraiable function with scope " << s << ", name " << n << ", and isPublic " << p << "\n";
     //create new variable
     Variable variable;
     variable.scope = s;

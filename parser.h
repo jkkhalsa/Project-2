@@ -6,9 +6,9 @@
 
 class Parser{
     public:
-    LexicalAnalyzer* lexer;
+    //LexicalAnalyzer* lexer;
     std::vector<Token> tokenList;
-    VariableList* symbolTable;
+    VariableList symbolTable;
     Token token;
 
     Parser();

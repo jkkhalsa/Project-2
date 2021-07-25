@@ -10,9 +10,8 @@ using namespace std;
 
 
 Parser::Parser(){
-    lexer = new LexicalAnalyzer();
+    //lexer = new LexicalAnalyzer();
     index = 0;
-    symbolTable = new VariableList();
 }
 
 
@@ -79,16 +78,14 @@ void Parser::parseProgram(){
     //is global variables if we have an ID and a comma
     //place 0 will always be an ID - both gv and scope start that way
     //scope place 1 will have a lbrace, gv place 1 will have a comma
-    token = Peek(1);
+    token = Peek(2);
     if(token.token_type == COMMA){
         //this is global variables
         //need to parse a var_list
-        index++; //now made sense of the comma
         parseVarList();
     }
     if(token.token_type == LBRACE){
         //this is scope
-        index++; //now made sense of the lbrace
         //need to parse the scope
         parseScope();
     }
@@ -109,11 +106,14 @@ void Parser::parseGlobalVars(){
 
 void Parser::parseVarList(){
     cout << "DEBUG: parsing a variable list\n";
+    cout << "DEBUG: index is " << index << "\n";
     token = tokenList[index];
+    cout << "DEBUG: token parsing is " << token.token_type << " with content " << token.lexeme << "\n";
     //a var list MUST start with an ID
     if(token.token_type == ID){
+        cout << "DEBUG: token type is, in fact, ID\n";
         //if we've got an ID, add it as a variable with all the niceties
-        symbolTable->addVariable(scopeList.back(), token.lexeme, currentlyPublic);
+        symbolTable.addVariable(scopeList.back(), token.lexeme, currentlyPublic);
         cout << "DEBUG: added variable with scope " << scopeList.back() << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
         index++;  //we've now made sense of this token
     }
@@ -162,7 +162,7 @@ void Parser::parseScope(){
     //past the statement list, now do we have an rbrace?
     expect(RBRACE);
     //we've hit an rbrace - that means we need to delete all the variables belonging to this scope
-    symbolTable->eraseScope(scopeList.back());
+    symbolTable.eraseScope(scopeList.back());
     //and now delete this from our list of nested scopes
     scopeList.pop_back();
     return;
@@ -225,12 +225,12 @@ void Parser::parseStmt(){
 int main()
 {
     LexicalAnalyzer lexer;
-    Parser parser;
+    Parser* parser = new Parser();
     Token token;
 
     token = lexer.GetToken();
     if(token.token_type != ERROR){  //is this cheating? we'll find out
-         parser.tokenList.push_back(token); //add what we just determined to the end of the token list
+         parser->tokenList.push_back(token); //add what we just determined to the end of the token list
     }
     //token.Print();
 
@@ -239,13 +239,13 @@ int main()
     {
         token = lexer.GetToken();
         if(token.token_type != ERROR){  //is this cheating? we'll find out
-             parser.tokenList.push_back(token); //add what we just determined to the end of the token list
+             parser->tokenList.push_back(token); //add what we just determined to the end of the token list
         }
         //token.Print();
     }
-    parser.printTokenList();
+    parser->printTokenList();
 
     //parse that list into actual output
-    parser.parseProgram();
+    parser->parseProgram();
 
 }
