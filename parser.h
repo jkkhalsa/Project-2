@@ -23,7 +23,6 @@ class Parser{
     void parsePrivateVars();
     void parseStmtList();
     void parseStmt();
-
     void printTokenList();
 
     private:

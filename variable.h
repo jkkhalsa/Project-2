@@ -24,6 +24,8 @@ class VariableList{
     void addVariable(std::string, std::string, bool); 
     void eraseScope(std::string);
     Variable searchList(std::string, std::string);
+    
+    void printVariableList();
 
 
 };

@@ -142,7 +142,6 @@ void Parser::parseScope(){
     //cout << "DEBUG: parsing scope\n";
     token = tokenList[index];
     scopeList.push_back(token.lexeme);
-    //cout << "our current scope is " << scopeList[scopeList.size()-1] << "\n";
     index++; //now made sense of the scope
     //we've got our scope locked in, make sure our syntax is correct
     expect(LBRACE);
@@ -227,9 +226,11 @@ void Parser::parseStmt(){
     }
     //search through the list for each variable name and print out their scopes as directed
     if(token.token_type == ID){
+        //cout << "DEBUG: searching for " << token.lexeme << " with scope " << scopeList[scopeList.size()-1] << "\n";
         var = symbolTable.searchList(scopeList[scopeList.size()-1], token.lexeme);
         //we've now made sense of this token so we increment
         index++;
+        //cout << "DEBUG: found " << var.name << " with scope " << var.scope << "\n";
         expect(EQUAL);
         token = tokenList[index];
         if(token.token_type == ID){
