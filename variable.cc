@@ -35,6 +35,7 @@ void VariableList::eraseScope(string deletingScope){
         if(list[i].scope == deletingScope){
             //cout << "DEBUG: deleting " << list[i].printVariable() << "\n";
             list.erase(list.begin() + i);
+            i--;
         }
     }
     //printVariableList();
