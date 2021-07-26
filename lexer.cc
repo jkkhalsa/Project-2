@@ -20,8 +20,11 @@ string reserved[] = { "END_OF_FILE",
     "LBRACE", "RBRACE", "ID", "ERROR"
 };
 
-#define KEYWORDS_COUNT 2
-string keyword[] = { "public", "private" };
+#define KEYWORDS_COUNT 5
+string keyword[] = { "IF", "WHILE", "DO", "THEN", "PRINT" };
+
+#define VISIBILTY_COUNT 2
+string visiblity[] = { "public", "private"};
 
 void Token::Print()
 {
@@ -89,6 +92,15 @@ bool LexicalAnalyzer::SkipComments(){
     return commentEncountered;
 }
 
+bool LexicalAnalyzer::IsVisibility(string s){
+    for (int i = 0; i < VISIBILTY_COUNT; i++) {
+        if (s == visiblity[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool LexicalAnalyzer::IsKeyword(string s)
 {
     for (int i = 0; i < KEYWORDS_COUNT; i++) {
@@ -97,6 +109,15 @@ bool LexicalAnalyzer::IsKeyword(string s)
         }
     }
     return false;
+}
+
+TokenType LexicalAnalyzer::FindVisibilityIndex(string s){
+    for (int i = 0; i < VISIBILTY_COUNT; i++) {
+        if (s == visiblity[i]) {
+            return (TokenType) (i + 1);
+        }
+    }
+    return ERROR;
 }
 
 TokenType LexicalAnalyzer::FindKeywordIndex(string s)
@@ -159,6 +180,8 @@ Token LexicalAnalyzer::ScanIdOrKeyword()
         tmp.line_no = line_no;
         if (IsKeyword(tmp.lexeme))
             tmp.token_type = FindKeywordIndex(tmp.lexeme);
+        else if (IsVisibility(tmp.lexeme))
+            tmp.token_type = FindVisibilityIndex(tmp.lexeme);
         else
             tmp.token_type = ID;
     } else {

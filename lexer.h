@@ -45,7 +45,9 @@ class LexicalAnalyzer {
     bool SkipSpace();
     bool SkipComments();
     bool IsKeyword(std::string);
+    bool IsVisibility(std::string);
     TokenType FindKeywordIndex(std::string);
+    TokenType FindVisibilityIndex(std::string);
     Token ScanIdOrKeyword();
     Token ScanNumber();
 };
