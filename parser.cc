@@ -67,7 +67,6 @@ Token Parser::expect(TokenType expected_type)
 }
 
 void Parser::parseProgram(){
-    //cout << "DEBUG: began parsing the program\n";
     //will either start with global variables or a scope
     //is global variables if we have an ID and a comma
     //place 0 will always be an ID - both gv and scope start that way
@@ -89,20 +88,18 @@ void Parser::parseProgram(){
     }
     //if we're here, then we've got an end of file, hopefully
     token = tokenList[index];
-    if(token.token_type == END_OF_FILE){
+    /*if(token.token_type == END_OF_FILE){
         return;
     }
     else{
         SyntaxError();
-    }
+    }*/
 }
 
 void Parser::parseGlobalVars(){
-    //cout << "DEBUG: parsing global variables\n";
     scopeList.push_back(":");
     parseVarList();
     //if this doesn't end with a semicolon, we've a fuckin problem m8
-    //cout << "DEBUG: returned from parsing var list in global variables\n";
     expect(SEMICOLON);
     
     //if we've got our semicolon, the next thing to happen should be a scope
@@ -115,13 +112,11 @@ void Parser::parseGlobalVars(){
 }
 
 void Parser::parseVarList(){
-    //cout << "DEBUG: parsing a variable list\n";
     token = tokenList[index];
     //a var list MUST start with an ID
     if(token.token_type == ID){
         //if we've got an ID, add it as a variable with all the niceties
         symbolTable.addVariable(scopeList.back(), token.lexeme, currentlyPublic);
-        //cout << "DEBUG: added variable with scope " << scopeList.back() << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
         index++;  //we've now made sense of this token
     }
     else{
@@ -139,7 +134,6 @@ void Parser::parseVarList(){
 }
 
 void Parser::parseScope(){
-    //cout << "DEBUG: parsing scope\n";
     token = tokenList[index];
     scopeList.push_back(token.lexeme);
     index++; //now made sense of the scope
@@ -155,7 +149,6 @@ void Parser::parseScope(){
         index++; //we've now made sense of this token
         parsePrivateVars();
     }
-    //cout << "DEBUG: returned from parsing public and private variable lists, back in scope\n";
     //if we're past both public and private, then this is a statement list
     //the statement list will handle its own error cases
     parseStmtList();
@@ -164,13 +157,11 @@ void Parser::parseScope(){
     //we've hit an rbrace - that means we need to delete all the variables belonging to this scope
     symbolTable.eraseScope(scopeList.back());
     //and now delete this from our list of nested scopes
-    //cout << "DEBUG: erased variables from scope " << scopeList[scopeList.size()-1] << "\n";
     scopeList.pop_back();
     return;
 }
 
 void Parser::parsePublicVars(){
-    //cout << "DEBUG: parsing public variables\n";
     currentlyPublic = true;
     expect(COLON);
     parseVarList();
@@ -183,7 +174,6 @@ void Parser::parsePublicVars(){
 }
 
 void Parser::parsePrivateVars(){
-    //cout << "DEBUG: parsing private variables\n";
     currentlyPublic = false;
     expect(COLON);
     parseVarList();
@@ -192,7 +182,6 @@ void Parser::parsePrivateVars(){
 }
 
 void Parser::parseStmtList(){
-    //cout << "DEBUG: parsing a statement list\n";
     //so if this doesn't start with an ID we've got a problem
     token = tokenList[index];
     if(token.token_type != ID){
@@ -218,7 +207,6 @@ void Parser::parseStmtList(){
 }
 
 void Parser::parseStmt(){
-    //cout << "DEBUG: parsing a statement\n";
     token = tokenList[index];
     Variable var;
     if(Peek(4).token_type != SEMICOLON){
@@ -226,11 +214,9 @@ void Parser::parseStmt(){
     }
     //search through the list for each variable name and print out their scopes as directed
     if(token.token_type == ID){
-        //cout << "DEBUG: searching for " << token.lexeme << " with scope " << scopeList[scopeList.size()-1] << "\n";
         var = symbolTable.searchList(scopeList[scopeList.size()-1], token.lexeme);
         //we've now made sense of this token so we increment
         index++;
-        //cout << "DEBUG: found " << var.name << " with scope " << var.scope << "\n";
         expect(EQUAL);
         token = tokenList[index];
         if(token.token_type == ID){
