@@ -6,10 +6,10 @@
 
 class Parser{
     public:
-    //LexicalAnalyzer* lexer;
     std::vector<Token> tokenList;
     VariableList symbolTable;
     Token token;
+    std::string output;
 
     Parser();
     Token Peek(int);

@@ -10,8 +10,8 @@ using namespace std;
 
 
 Parser::Parser(){
-    //lexer = new LexicalAnalyzer();
     index = 0;
+    output = "";
 }
 
 
@@ -243,13 +243,15 @@ void Parser::parseStmt(){
         token = tokenList[index];
         if(token.token_type == ID){
             //if we're here then it's safe to print out the full statement
-            cout << var.printVariable();
+            output += var.printVariable();
+            //cout << var.printVariable();
             var = symbolTable.searchList(scopeList[scopeList.size()-1], token.lexeme);
             //we've now made sense of this token so we increment
             index++;
             
             //and print out the statement
-            cout << " = " << var.printVariable() << "\n";
+            output += " = " + var.printVariable() + "\n";
+            //cout << " = " << var.printVariable() << "\n";
         }
         else{
             //if this isn't a variable there's an issue
@@ -292,5 +294,6 @@ int main()
     //parse that list into actual output
     parser->parseProgram();
     //cout << "gracefully exited!\n";
+    cout << parser->output;
     return 1;
 }
