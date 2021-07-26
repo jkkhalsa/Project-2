@@ -10,3 +10,5 @@ parser.o
 variable.o
 parser.o
 .vscode/launch.json
+test_names_02.txt
+test_parsing_error01.txt
