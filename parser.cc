@@ -66,13 +66,6 @@ Token Parser::expect(TokenType expected_type)
     //we've now made sense of this symbol
     index++;
     return t;
-
-    
-    /* BAZZI CODE
-    Token t = lexer->GetToken();
-    if (t.token_type != expected_type)
-        SyntaxError();
-    return t;*/
 }
 
 void Parser::parseProgram(){
@@ -80,9 +73,14 @@ void Parser::parseProgram(){
     //will either start with global variables or a scope
     //is global variables if we have an ID and a comma
     //place 0 will always be an ID - both gv and scope start that way
-    //scope place 1 will have a lbrace, gv place 1 will have a comma
+    token = tokenList[index];
+    if(token.token_type != ID){
+        //cout << "DEBUG: we don't think this starts with an ID\n";
+        SyntaxError();
+    }
+    //scope place 1 will have a lbrace, gv place 1 will have a comma or semicolon
     token = Peek(2);
-    if(token.token_type == COMMA){
+    if(token.token_type == COMMA || token.token_type == SEMICOLON){
         //this is global variables
         //need to parse global variables
         parseGlobalVars();
@@ -228,7 +226,7 @@ void Parser::parseStmtList(){
 
 void Parser::parseStmt(){
     //cout << "DEBUG: parsing a statement\n";
-    Token token = tokenList[index];
+    token = tokenList[index];
     Variable var;
     if(Peek(4).token_type != SEMICOLON){
         SyntaxError();
