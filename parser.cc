@@ -231,7 +231,7 @@ void Parser::parseStmt(){
     if(Peek(4).token_type != SEMICOLON){
         SyntaxError();
     }
-    //TODO: search through the list for each variable name and print out their scopes as directed
+    //search through the list for each variable name and print out their scopes as directed
     if(token.token_type == ID){
         var = symbolTable.searchList(scopeList[scopeList.size()-1], token.lexeme);
         //we've now made sense of this token so we increment
