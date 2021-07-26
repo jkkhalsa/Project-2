@@ -31,7 +31,6 @@ Token Parser::Peek(int howFar)
         token.token_type = END_OF_FILE;
         return token;
     } else{
-        //cout << "DEBUG: token type peeked at is " << tokenList[peekIndex].token_type << "\n";
         return tokenList[peekIndex];
         
     }
@@ -42,8 +41,6 @@ Token Parser::Peek(int howFar)
 void Parser::SyntaxError()
 {
     cout << "Syntax Error\n";
-    //cout << "error on token type " << token.token_type << "\n";
-    //cout << "token is " << token.lexeme << " at line " << token.line_no << "\n";
     exit(1);
 }
 

@@ -31,9 +31,7 @@ void VariableList::addVariable(string s, string n, bool p){
 //goes through the variable list and erases the ones belonging to the scope we just exited
 void VariableList::eraseScope(string deletingScope){
     for(int i = 0; i < (int)list.size(); i++){
-        //cout << "DEBUG: checking " << list[i].name << " with scope " << list[i].scope << " for deletion around scope " << deletingScope << "\n";
         if(list[i].scope == deletingScope){
-            //cout << "DEBUG: deleting " << list[i].printVariable() << "\n";
             list.erase(list.begin() + i);
             i--;
         }
@@ -48,7 +46,6 @@ Variable VariableList::searchList(string currentScope, string variableName){
     for(int i = list.size()-1; i >= 0; i--){
         if(list[i].name == variableName){
             if(list[i].scope == currentScope || list[i].isPublic || list[i].scope == ":"){
-                //cout << "DEBUG: searchList is returning " << list[i].printVariable() << "\n";
                 return list[i];
             }
         }
