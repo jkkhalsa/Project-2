@@ -88,12 +88,12 @@ void Parser::parseProgram(){
     }
     //if we're here, then we've got an end of file, hopefully
     token = tokenList[index];
-    /*if(token.token_type == END_OF_FILE){
+    if(token.token_type == END_OF_FILE){
         return;
     }
     else{
         SyntaxError();
-    }*/
+    }
 }
 
 void Parser::parseGlobalVars(){
