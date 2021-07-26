@@ -20,8 +20,8 @@ string reserved[] = { "END_OF_FILE",
     "LBRACE", "RBRACE", "ID", "ERROR"
 };
 
-#define KEYWORDS_COUNT 2
-string keyword[] = { "public", "private" };
+#define KEYWORDS_COUNT 5
+string keyword[] = { "IF", "WHILE", "DO", "THEN", "PRINT" };
 
 #define VISIBILTY_COUNT 2
 string visiblity[] = { "public", "private"};
