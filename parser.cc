@@ -59,10 +59,8 @@ Token Parser::expect(TokenType expected_type)
 {
     Token t = tokenList[index];
     if(t.token_type != expected_type){
-        //cout << "DEBUG: we think " << t.token_type << " does not equal " << expected_type << "\n";
         SyntaxError();
     }
-    //cout << "DEBUG: successful expectation of " << expected_type << "\n";
     //we've now made sense of this symbol
     index++;
     return t;
@@ -75,7 +73,6 @@ void Parser::parseProgram(){
     //place 0 will always be an ID - both gv and scope start that way
     token = tokenList[index];
     if(token.token_type != ID){
-        //cout << "DEBUG: we don't think this starts with an ID\n";
         SyntaxError();
     }
     //scope place 1 will have a lbrace, gv place 1 will have a comma or semicolon
@@ -90,7 +87,6 @@ void Parser::parseProgram(){
         //need to parse the scope
         parseScope();
     }
-    //cout << "DEBUG: returned to parseProgram after exiting all scopes\n";
     //if we're here, then we've got an end of file, hopefully
     token = tokenList[index];
     if(token.token_type == END_OF_FILE){
@@ -104,7 +100,6 @@ void Parser::parseProgram(){
 void Parser::parseGlobalVars(){
     //cout << "DEBUG: parsing global variables\n";
     scopeList.push_back(":");
-    //currentScope = ":";
     parseVarList();
     //if this doesn't end with a semicolon, we've a fuckin problem m8
     //cout << "DEBUG: returned from parsing var list in global variables\n";
@@ -149,7 +144,6 @@ void Parser::parseScope(){
     scopeList.push_back(token.lexeme);
     //cout << "our current scope is " << scopeList[scopeList.size()-1] << "\n";
     index++; //now made sense of the scope
-    //currentScope = token.lexeme;
     //we've got our scope locked in, make sure our syntax is correct
     expect(LBRACE);
     //ok good now we have public and private variables to check for
@@ -281,13 +275,10 @@ int main()
         if(token.token_type != ERROR){  //is this cheating? we'll find out
              parser->tokenList.push_back(token); //add what we just determined to the end of the token list
         }
-        //token.Print();
     }
-    //parser->printTokenList();
 
     //parse that list into actual output
     parser->parseProgram();
-    //cout << "gracefully exited!\n";
     cout << parser->output;
     return 1;
 }
