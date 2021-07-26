@@ -31,7 +31,7 @@ Token Parser::Peek(int howFar)
         token.token_type = END_OF_FILE;
         return token;
     } else{
-        cout << "DEBUG: token type peeked at is " << tokenList[peekIndex].token_type << "\n";
+        //cout << "DEBUG: token type peeked at is " << tokenList[peekIndex].token_type << "\n";
         return tokenList[peekIndex];
         
     }
@@ -41,9 +41,9 @@ Token Parser::Peek(int howFar)
 
 void Parser::SyntaxError()
 {
-    cout << "SYNTAX ERROR\n";
-    cout << "error on token type " << token.token_type << "\n";
-    cout << "token is " << token.lexeme << " at line " << token.line_no << "\n";
+    //cout << "SYNTAX ERROR\n";
+    //cout << "error on token type " << token.token_type << "\n";
+    //cout << "token is " << token.lexeme << " at line " << token.line_no << "\n";
     exit(1);
 }
 
@@ -59,10 +59,10 @@ Token Parser::expect(TokenType expected_type)
 {
     Token t = tokenList[index];
     if(t.token_type != expected_type){
-        cout << "DEBUG: we think " << t.token_type << " does not equal " << expected_type << "\n";
+        //cout << "DEBUG: we think " << t.token_type << " does not equal " << expected_type << "\n";
         SyntaxError();
     }
-    cout << "DEBUG: successful expectation of " << expected_type << "\n";
+    //cout << "DEBUG: successful expectation of " << expected_type << "\n";
     //we've now made sense of this symbol
     index++;
     return t;
@@ -76,7 +76,7 @@ Token Parser::expect(TokenType expected_type)
 }
 
 void Parser::parseProgram(){
-    cout << "DEBUG: began parsing the program\n";
+    //cout << "DEBUG: began parsing the program\n";
     //will either start with global variables or a scope
     //is global variables if we have an ID and a comma
     //place 0 will always be an ID - both gv and scope start that way
@@ -92,7 +92,7 @@ void Parser::parseProgram(){
         //need to parse the scope
         parseScope();
     }
-    cout << "DEBUG: returned to parseProgram after exiting all scopes\n";
+    //cout << "DEBUG: returned to parseProgram after exiting all scopes\n";
     //if we're here, then we've got an end of file, hopefully
     token = tokenList[index];
     if(token.token_type == END_OF_FILE){
@@ -104,12 +104,12 @@ void Parser::parseProgram(){
 }
 
 void Parser::parseGlobalVars(){
-    cout << "DEBUG: parsing global variables\n";
+    //cout << "DEBUG: parsing global variables\n";
     scopeList.push_back(":");
     //currentScope = ":";
     parseVarList();
     //if this doesn't end with a semicolon, we've a fuckin problem m8
-    cout << "DEBUG: returned from parsing var list in global variables\n";
+    //cout << "DEBUG: returned from parsing var list in global variables\n";
     expect(SEMICOLON);
     
     //if we've got our semicolon, the next thing to happen should be a scope
@@ -122,13 +122,13 @@ void Parser::parseGlobalVars(){
 }
 
 void Parser::parseVarList(){
-    cout << "DEBUG: parsing a variable list\n";
+    //cout << "DEBUG: parsing a variable list\n";
     token = tokenList[index];
     //a var list MUST start with an ID
     if(token.token_type == ID){
         //if we've got an ID, add it as a variable with all the niceties
         symbolTable.addVariable(scopeList.back(), token.lexeme, currentlyPublic);
-        cout << "DEBUG: added variable with scope " << scopeList.back() << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
+        //cout << "DEBUG: added variable with scope " << scopeList.back() << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
         index++;  //we've now made sense of this token
     }
     else{
@@ -146,10 +146,10 @@ void Parser::parseVarList(){
 }
 
 void Parser::parseScope(){
-    cout << "DEBUG: parsing scope\n";
+    //cout << "DEBUG: parsing scope\n";
     token = tokenList[index];
     scopeList.push_back(token.lexeme);
-    cout << "our current scope is " << scopeList[scopeList.size()-1] << "\n";
+    //cout << "our current scope is " << scopeList[scopeList.size()-1] << "\n";
     index++; //now made sense of the scope
     //currentScope = token.lexeme;
     //we've got our scope locked in, make sure our syntax is correct
@@ -164,7 +164,7 @@ void Parser::parseScope(){
         index++; //we've now made sense of this token
         parsePrivateVars();
     }
-    cout << "DEBUG: returned from parsing public and private variable lists, back in scope\n";
+    //cout << "DEBUG: returned from parsing public and private variable lists, back in scope\n";
     //if we're past both public and private, then this is a statement list
     //the statement list will handle its own error cases
     parseStmtList();
@@ -173,13 +173,13 @@ void Parser::parseScope(){
     //we've hit an rbrace - that means we need to delete all the variables belonging to this scope
     symbolTable.eraseScope(scopeList.back());
     //and now delete this from our list of nested scopes
-    cout << "DEBUG: erased variables from scope " << scopeList[scopeList.size()-1] << "\n";
+    //cout << "DEBUG: erased variables from scope " << scopeList[scopeList.size()-1] << "\n";
     scopeList.pop_back();
     return;
 }
 
 void Parser::parsePublicVars(){
-    cout << "DEBUG: parsing public variables\n";
+    //cout << "DEBUG: parsing public variables\n";
     currentlyPublic = true;
     expect(COLON);
     parseVarList();
@@ -192,7 +192,7 @@ void Parser::parsePublicVars(){
 }
 
 void Parser::parsePrivateVars(){
-    cout << "DEBUG: parsing private variables\n";
+    //cout << "DEBUG: parsing private variables\n";
     currentlyPublic = false;
     expect(COLON);
     parseVarList();
@@ -201,7 +201,7 @@ void Parser::parsePrivateVars(){
 }
 
 void Parser::parseStmtList(){
-    cout << "DEBUG: parsing a statement list\n";
+    //cout << "DEBUG: parsing a statement list\n";
     //so if this doesn't start with an ID we've got a problem
     token = tokenList[index];
     if(token.token_type != ID){
@@ -227,7 +227,7 @@ void Parser::parseStmtList(){
 }
 
 void Parser::parseStmt(){
-    cout << "DEBUG: parsing a statement\n";
+    //cout << "DEBUG: parsing a statement\n";
     Token token = tokenList[index];
     Variable var;
     //here's where we're going to output what's needed for the program
@@ -287,10 +287,10 @@ int main()
         }
         //token.Print();
     }
-    parser->printTokenList();
+    //parser->printTokenList();
 
     //parse that list into actual output
     parser->parseProgram();
-    cout << "gracefully exited!\n";
+    //cout << "gracefully exited!\n";
     return 1;
 }
