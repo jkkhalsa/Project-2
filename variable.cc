@@ -4,6 +4,9 @@
 using namespace std;
 
 string Variable::printVariable(){
+    if(scope == ":"){
+        return scope + ':' + name;
+    }
     return scope + '.' + name;
 }
 
@@ -14,7 +17,6 @@ VariableList::VariableList(){
 
 //scope, name, isPublic?
 void VariableList::addVariable(string s, string n, bool p){
-    cout << "DEBUG: in addVaraiable function with scope " << s << ", name " << n << ", and isPublic " << p << "\n";
     //create new variable
     Variable variable;
     variable.scope = s;
@@ -40,7 +42,8 @@ void VariableList::eraseScope(string deletingScope){
     return;
 }
 
-//TODO: Search through our symbol table to see where the one that just got called is at
+//Search through our symbol table to see where the one that just got called is at
+//pass current scope, then variable name we're looking for
 Variable VariableList::searchList(string currentScope, string variableName){
     auto iterator = list.end();
     while(iterator != list.begin()){
@@ -50,6 +53,7 @@ Variable VariableList::searchList(string currentScope, string variableName){
                 return *iterator;//TODO: does this work pointer-wise????
             }
         }
+        --iterator;
     }
     //if we're down here then there's no variable in the entire list that matches
     //so just make one ez

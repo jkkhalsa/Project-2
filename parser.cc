@@ -57,11 +57,14 @@ void Parser::printTokenList(){
 //increments the index of tokenList in the function itself
 Token Parser::expect(TokenType expected_type)
 {
-    index++;
     Token t = tokenList[index];
     if(t.token_type != expected_type){
+        cout << "DEBUG: we think " << t.token_type << " does not equal " << expected_type << "\n";
         SyntaxError();
     }
+    cout << "DEBUG: successful expectation of " << expected_type << "\n";
+    //we've now made sense of this symbol
+    index++;
     return t;
 
     
@@ -89,6 +92,12 @@ void Parser::parseProgram(){
         //need to parse the scope
         parseScope();
     }
+    cout << "DEBUG: returned to parseProgram after exiting all scopes\n";
+    //if we're here, then we've got an end of file, hopefully
+    token = tokenList[index];
+    if(token.token_type == END_OF_FILE){
+        return;
+    }
     else{
         SyntaxError();
     }
@@ -100,18 +109,23 @@ void Parser::parseGlobalVars(){
     //currentScope = ":";
     parseVarList();
     //if this doesn't end with a semicolon, we've a fuckin problem m8
+    cout << "DEBUG: returned from parsing var list in global variables\n";
     expect(SEMICOLON);
+    
+    //if we've got our semicolon, the next thing to happen should be a scope
+    //check for this by peeking for an lbrace
+    if(Peek(2).token_type != LBRACE){
+        SyntaxError();
+    }
+    parseScope();
     return;
 }
 
 void Parser::parseVarList(){
     cout << "DEBUG: parsing a variable list\n";
-    cout << "DEBUG: index is " << index << "\n";
     token = tokenList[index];
-    cout << "DEBUG: token parsing is " << token.token_type << " with content " << token.lexeme << "\n";
     //a var list MUST start with an ID
     if(token.token_type == ID){
-        cout << "DEBUG: token type is, in fact, ID\n";
         //if we've got an ID, add it as a variable with all the niceties
         symbolTable.addVariable(scopeList.back(), token.lexeme, currentlyPublic);
         cout << "DEBUG: added variable with scope " << scopeList.back() << ", name " << token.lexeme << ", and isPublic " << currentlyPublic << "\n";
@@ -135,11 +149,12 @@ void Parser::parseScope(){
     cout << "DEBUG: parsing scope\n";
     token = tokenList[index];
     scopeList.push_back(token.lexeme);
+    cout << "our current scope is " << scopeList[scopeList.size()-1] << "\n";
+    index++; //now made sense of the scope
     //currentScope = token.lexeme;
     //we've got our scope locked in, make sure our syntax is correct
     expect(LBRACE);
     //ok good now we have public and private variables to check for
-    index++;
     token = tokenList[index];
     if(token.token_type == PUBLIC){
         index++; //we've now made sense of this token
@@ -149,21 +164,16 @@ void Parser::parseScope(){
         index++; //we've now made sense of this token
         parsePrivateVars();
     }
-
-    token = tokenList[index];
+    cout << "DEBUG: returned from parsing public and private variable lists, back in scope\n";
     //if we're past both public and private, then this is a statement list
-    //so if we don't have an equals sign we've got a syntax error
-    if(Peek(1).token_type == EQUAL){
-        parseStmtList();
-    }
-    else{
-        SyntaxError();
-    }
+    //the statement list will handle its own error cases
+    parseStmtList();
     //past the statement list, now do we have an rbrace?
     expect(RBRACE);
     //we've hit an rbrace - that means we need to delete all the variables belonging to this scope
     symbolTable.eraseScope(scopeList.back());
     //and now delete this from our list of nested scopes
+    cout << "DEBUG: erased variables from scope " << scopeList[scopeList.size()-1] << "\n";
     scopeList.pop_back();
     return;
 }
@@ -174,6 +184,10 @@ void Parser::parsePublicVars(){
     expect(COLON);
     parseVarList();
     expect(SEMICOLON);
+    if(tokenList[index].token_type == PRIVATE){
+        index++;
+        parsePrivateVars();
+    }
     return;
 }
 
@@ -187,22 +201,24 @@ void Parser::parsePrivateVars(){
 }
 
 void Parser::parseStmtList(){
+    cout << "DEBUG: parsing a statement list\n";
     //so if this doesn't start with an ID we've got a problem
     token = tokenList[index];
     if(token.token_type != ID){
         SyntaxError();
     }
     //cool we're here now so this is either going to stmt or scope, check one ahead
-    if(Peek(1).token_type == EQUAL){
+    if(Peek(2).token_type == EQUAL){
         parseStmt();
     }
-    if(Peek(1).token_type == LBRACE){
+    if(Peek(2).token_type == LBRACE){
         parseScope();
     }
 
     //there's either another statement list starting here or else we need to return
     //once again, only way to know is check one ahead
-    if(Peek(1).token_type == EQUAL || Peek(1).token_type == LBRACE){
+    //could go at the bottom of parseStmt but we wrote it this way so fuck you
+    if(Peek(2).token_type == EQUAL || Peek(2).token_type == LBRACE){
         parseStmtList();
     }
     return;
@@ -211,13 +227,41 @@ void Parser::parseStmtList(){
 }
 
 void Parser::parseStmt(){
+    cout << "DEBUG: parsing a statement\n";
+    Token token = tokenList[index];
+    Variable var;
     //here's where we're going to output what's needed for the program
-    if(Peek(3).token_type != SEMICOLON){  //TODO: make sure this is peeking the right number of spaces
+    if(Peek(4).token_type != SEMICOLON){  //TODO: make sure this is peeking the right number of spaces
         SyntaxError();
     }
     //TODO: search through the list for each variable name and print out their scopes as directed
-
-
+    if(token.token_type == ID){
+        var = symbolTable.searchList(scopeList[scopeList.size()-1], token.lexeme);
+        //we've now made sense of this token so we increment
+        index++;
+        expect(EQUAL);
+        token = tokenList[index];
+        if(token.token_type == ID){
+            //if we're here then it's safe to print out the full statement
+            cout << var.printVariable();
+            var = symbolTable.searchList(scopeList[scopeList.size()-1], token.lexeme);
+            //we've now made sense of this token so we increment
+            index++;
+            
+            //and print out the statement
+            cout << " = " << var.printVariable() << "\n";
+        }
+        else{
+            //if this isn't a variable there's an issue
+            SyntaxError();
+        }
+    }
+    else{
+        //if this isn't a variable there's an issue
+        SyntaxError();
+    }
+    expect(SEMICOLON);  //we already checked for the semicolon here, but we have to skip it
+    return;
 }
 
 
@@ -247,5 +291,6 @@ int main()
 
     //parse that list into actual output
     parser->parseProgram();
-
+    cout << "gracefully exited!\n";
+    return 1;
 }
