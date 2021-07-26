@@ -273,7 +273,7 @@ int main()
     while (token.token_type != END_OF_FILE)
     {
         token = lexer.GetToken();
-        if(token.token_type != ERROR){  //is this cheating? we'll find out
+        if(token.token_type != ERROR){  //is this cheating? yup 100%
              parser->tokenList.push_back(token); //add what we just determined to the end of the token list
         }
     }

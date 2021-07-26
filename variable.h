@@ -9,7 +9,6 @@ class Variable{
     public:
     std::string scope;
     std::string name;
-    //std::string content;
     bool isPublic;
 
     std::string printVariable();
