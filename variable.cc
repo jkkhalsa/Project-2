@@ -46,11 +46,11 @@ void VariableList::eraseScope(string deletingScope){
 //pass current scope, then variable name we're looking for
 Variable VariableList::searchList(string currentScope, string variableName){
     auto iterator = list.end();
-    while(iterator != list.begin()){
+    while(iterator >= list.begin()){
         if(iterator->name == variableName){
             if(iterator->scope == currentScope || iterator->isPublic == true || iterator->scope == ":"){
                 //if we find the variable matching the scope and the name
-                return *iterator;//TODO: does this work pointer-wise????
+                return *iterator;
             }
         }
         --iterator;

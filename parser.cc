@@ -230,8 +230,7 @@ void Parser::parseStmt(){
     //cout << "DEBUG: parsing a statement\n";
     Token token = tokenList[index];
     Variable var;
-    //here's where we're going to output what's needed for the program
-    if(Peek(4).token_type != SEMICOLON){  //TODO: make sure this is peeking the right number of spaces
+    if(Peek(4).token_type != SEMICOLON){
         SyntaxError();
     }
     //TODO: search through the list for each variable name and print out their scopes as directed
@@ -244,14 +243,12 @@ void Parser::parseStmt(){
         if(token.token_type == ID){
             //if we're here then it's safe to print out the full statement
             output += var.printVariable();
-            //cout << var.printVariable();
             var = symbolTable.searchList(scopeList[scopeList.size()-1], token.lexeme);
             //we've now made sense of this token so we increment
             index++;
             
             //and print out the statement
             output += " = " + var.printVariable() + "\n";
-            //cout << " = " << var.printVariable() << "\n";
         }
         else{
             //if this isn't a variable there's an issue
@@ -275,10 +272,9 @@ int main()
     Token token;
 
     token = lexer.GetToken();
-    if(token.token_type != ERROR){  //is this cheating? we'll find out
+    if(token.token_type != ERROR){  //is this cheating? yup 100%
          parser->tokenList.push_back(token); //add what we just determined to the end of the token list
     }
-    //token.Print();
 
     //find the list of tokens
     while (token.token_type != END_OF_FILE)
